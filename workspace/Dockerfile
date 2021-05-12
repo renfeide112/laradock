@@ -1521,43 +1521,14 @@ USER root
 
 ARG SHELL_OH_MY_ZSH=false
 RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
-    apt install -y zsh lua subversion liblua \
+    apt install -y zsh lua5.3 wget subversion \
 ;fi
 
 ARG SHELL_OH_MY_ZSH_AUTOSUGESTIONS=false
 ARG SHELL_OH_MY_ZSH_ALIASES=false
 
 USER laradock
-RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh) --keep-zshrc" && \
-    sed -i -r 's/^plugins=\(.*?\)$/plugins=(laravel5)/' /home/laradock/.zshrc && \
-    echo '\n\
-bindkey "^[OB" down-line-or-search\n\
-bindkey "^[OC" forward-char\n\
-bindkey "^[OD" backward-char\n\
-bindkey "^[OF" end-of-line\n\
-bindkey "^[OH" beginning-of-line\n\
-bindkey "^[[1~" beginning-of-line\n\
-bindkey "^[[3~" delete-char\n\
-bindkey "^[[4~" end-of-line\n\
-bindkey "^[[5~" up-line-or-history\n\
-bindkey "^[[6~" down-line-or-history\n\
-bindkey "^?" backward-delete-char\n' >> /home/laradock/.zshrc && \
-  if [ ${SHELL_OH_MY_ZSH_AUTOSUGESTIONS} = true ]; then \
-    sh -c "git clone https://github.com/zsh-users/zsh-autosuggestions /home/laradock/.oh-my-zsh/custom/plugins/zsh-autosuggestions" && \
-    sed -i 's~plugins=(~plugins=(zsh-autosuggestions ~g' /home/laradock/.zshrc && \
-    sed -i '1iZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20' /home/laradock/.zshrc && \
-    sed -i '1iZSH_AUTOSUGGEST_STRATEGY=(history completion)' /home/laradock/.zshrc && \
-    sed -i '1iZSH_AUTOSUGGEST_USE_ASYNC=1' /home/laradock/.zshrc && \
-    sed -i '1iTERM=xterm-256color' /home/laradock/.zshrc \
-  ;fi && \
-  if [ ${SHELL_OH_MY_ZSH_ALIASES} = true ]; then \
-    echo "" >> /home/laradock/.zshrc && \
-    echo "# Load Custom Aliases" >> /home/laradock/.zshrc && \
-    echo "source /home/laradock/aliases.sh" >> /home/laradock/.zshrc && \
-    echo "" >> /home/laradock/.zshrc \
-  ;fi \
-;fi
+COPY ./zshrc /home/laradock/.zshrc 
 
 USER root
 
@@ -1569,27 +1540,13 @@ USER root
 
 COPY ./aliases.sh /root/aliases.sh
 COPY ./aliases.sh /home/laradock/aliases.sh
-
+COPY ./zshrc /root/.zshrc
 RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
     sed -i 's/\r//' /root/aliases.sh && \
     sed -i 's/\r//' /home/laradock/aliases.sh && \
-    chown laradock:laradock /home/laradock/aliases.sh && \
-    # echo "" >> ~/.zshrc && \
-    # echo "# Load Custom Aliases" >> ~/.zshrc && \
-    # echo "source ~/aliases.sh" >> ~/.zshrc && \
-    COPY ./zshrc ~/.zshrc && \
-	  echo "" >> ~/.zshrc \
+    chown laradock:laradock /home/laradock/aliases.sh \
 ;fi
 
-USER laradock
-
-RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
-    COPY ./zshrc ~/.zshrc && \
-    # echo "" >> ~/.zshrc && \
-    # echo "# Load Custom Aliases" >> ~/.zshrc && \
-    # echo "source ~/aliases.sh" >> ~/.zshrc && \
-	  echo "" >> ~/.zshrc \
-;fi
 
 USER root
 

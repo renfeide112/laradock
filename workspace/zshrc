@@ -1,0 +1,102 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+fi
+
+source "$HOME/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+### End of Zinit's installer chunk
+
+
+# 快速目录跳转
+zinit ice lucid wait='1'
+zinit light skywind3000/z.lua
+
+# 语法高亮
+zinit ice lucid wait='0' atinit='zpcompinit'
+zinit light zdharma/fast-syntax-highlighting
+
+# 自动建议
+zinit ice lucid wait="0" atload='_zsh_autosuggest_start'
+zinit light zsh-users/zsh-autosuggestions
+
+# 补全
+# zinit ice lucid wait='0'
+# zinit light zsh-users/zsh-completions
+
+# 加载 OMZ 框架及部分插件
+zinit snippet OMZ::lib/completion.zsh
+zinit snippet OMZ::lib/history.zsh
+zinit snippet OMZ::lib/key-bindings.zsh
+zinit snippet OMZ::lib/theme-and-appearance.zsh
+zinit snippet OMZ::plugins/colored-man-pages/colored-man-pages.plugin.zsh
+zinit snippet OMZ::plugins/sudo/sudo.plugin.zsh
+zinit snippet OMZ::plugins/common-aliases/common-aliases.plugin.zsh
+
+zinit ice svn
+zinit snippet OMZ::plugins/extract
+
+zinit ice lucid wait='1'
+zinit snippet OMZ::plugins/git/git.plugin.zsh
+
+# 加载 pure 主题
+zinit ice pick"async.zsh" src"pure.zsh"
+zinit light sindresorhus/pure
+
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+#zinit light Aloxaf/fzf-tab
+
+# ---- (可选)加载了一堆二进制程序 ----
+zinit light zinit-zsh/z-a-rust
+zinit light zinit-zsh/z-a-as-monitor
+zinit light zinit-zsh/z-a-patch-dl
+zinit light zinit-zsh/z-a-bin-gem-node
+
+zinit ice from"gh-r" as"program"
+zinit light junegunn/fzf-bin
+zinit ice as"command" from"gh-r" mv"fd* -> fd" pick"fd/fd"
+zinit light sharkdp/fd
+zinit ice as"command" from"gh-r" mv"bat* -> bat" pick"bat/bat"
+zinit light sharkdp/bat
+zinit ice wait"2" lucid from"gh-r" as"program" mv"bin/exa* -> exa"
+zinit light ogham/exa
+zinit ice wait"2" lucid from"gh-r" as"program" mv"*/rg* -> rg"
+zinit light BurntSushi/ripgrep
+    
+# 加载它们的补全等
+zinit ice mv="*.zsh -> _fzf" as="completion"
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/shell/completion.zsh'
+zinit snippet 'https://github.com/junegunn/fzf/blob/master/shell/key-bindings.zsh'
+zinit ice as="completion"
+zinit snippet 'https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/fd/_fd'
+zinit ice mv="*.zsh -> _exa" as="completion"
+zinit snippet 'https://github.com/ogham/exa/blob/master/completions/completions.zsh'
+
+zinit load eventi/noreallyjustfuckingstopalready
+
+# 不需要花里胡哨的 ls，我们有更花里胡哨的 exa
+DISABLE_LS_COLORS=true
+alias ls=exa
+# 配置 fzf 使用 fd
+export FZF_DEFAULT_COMMAND='fd --type f'
+# ---- 加载完了 ----
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --preview '(highlight -O ansi {} || cat {}) 2> /dev/null | head -500'"
+
