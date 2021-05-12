@@ -1521,7 +1521,7 @@ USER root
 
 ARG SHELL_OH_MY_ZSH=false
 RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
-    apt install -y zsh \
+    apt install -y zsh lua subversion liblua \
 ;fi
 
 ARG SHELL_OH_MY_ZSH_AUTOSUGESTIONS=false
@@ -1574,18 +1574,20 @@ RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
     sed -i 's/\r//' /root/aliases.sh && \
     sed -i 's/\r//' /home/laradock/aliases.sh && \
     chown laradock:laradock /home/laradock/aliases.sh && \
-    echo "" >> ~/.zshrc && \
-    echo "# Load Custom Aliases" >> ~/.zshrc && \
-    echo "source ~/aliases.sh" >> ~/.zshrc && \
+    # echo "" >> ~/.zshrc && \
+    # echo "# Load Custom Aliases" >> ~/.zshrc && \
+    # echo "source ~/aliases.sh" >> ~/.zshrc && \
+    COPY ./zshrc ~/.zshrc && \
 	  echo "" >> ~/.zshrc \
 ;fi
 
 USER laradock
 
 RUN if [ ${SHELL_OH_MY_ZSH} = true ]; then \
-    echo "" >> ~/.zshrc && \
-    echo "# Load Custom Aliases" >> ~/.zshrc && \
-    echo "source ~/aliases.sh" >> ~/.zshrc && \
+    COPY ./zshrc ~/.zshrc && \
+    # echo "" >> ~/.zshrc && \
+    # echo "# Load Custom Aliases" >> ~/.zshrc && \
+    # echo "source ~/aliases.sh" >> ~/.zshrc && \
 	  echo "" >> ~/.zshrc \
 ;fi
 
@@ -1652,4 +1654,4 @@ RUN apt-get clean && \
     rm /var/log/lastlog /var/log/faillog
 
 # Set default work directory
-WORKDIR /var/www
+WORKDIR /data
