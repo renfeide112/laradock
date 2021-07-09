@@ -88,7 +88,7 @@ zinit snippet 'https://github.com/junegunn/fzf/blob/master/shell/key-bindings.zs
 zinit ice as="completion"
 zinit snippet 'https://github.com/robbyrussell/oh-my-zsh/blob/master/plugins/fd/_fd'
 zinit ice mv="*.zsh -> _exa" as="completion"
-zinit snippet 'https://github.com/ogham/exa/blob/master/completions/completions.zsh'
+zinit snippet 'https://raw.githubusercontent.com/ogham/exa/master/completions/zsh/_exa'
 
 zinit load eventi/noreallyjustfuckingstopalready
 
